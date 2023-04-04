@@ -1,0 +1,17 @@
+.form-container {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.form-input {
+  margin-bottom: 10px;
+}
+
+.form-button {
+  margin-top: 10px;
+}
+
+ion-checkbox[slot="start"] {
+  margin-right: 16px;
+}
