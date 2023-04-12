@@ -15,3 +15,55 @@
 ion-checkbox[slot="start"] {
   margin-right: 16px;
 }
+
+.todo-form {
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  animation-name: scaleIn;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.bar {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.1rem;
+  background-color: #000; 
+  padding: 10px;
+  border-radius: 10px;
+  color: aqua;
+  animation-name: fadeIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.Hbar {
+  background-color: aqua;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+}

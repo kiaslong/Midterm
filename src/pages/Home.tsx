@@ -20,26 +20,42 @@ import {
   IonCardTitle,
   IonCardHeader,
   IonCardSubtitle,
-  IonIcon
+  IonIcon,
+  IonDatetime,
+  IonToggle,
+  IonModal
 } from '@ionic/react';
 import { InputChangeEventDetail } from '@ionic/core';
-import { key, pin } from 'ionicons/icons';
+import {pin,trashBin,settings} from 'ionicons/icons';
 import './Home.css';
-
+import React from 'react';
 interface Todo {
   id: number;
-  text: string;
+
   title: string;
   content: string;
   pinned: boolean;
+  date: string;
 }
 
 const Home: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newsothutu, setNewsothutu] = useState<string>('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  
+ 
+   const [date, setDate] = useState<string>('');
+   const [Id, setSelectedID] = useState<number>(1);
 
+  function handleOpenEditModal(id:number) {
+    setSelectedID(id);
+
+    setIsEditModalOpen(true);
+  }
+  function handleCloseEditModal() {
+    setIsEditModalOpen(false);
+  }
   const handleContentChange = (event: CustomEvent<InputChangeEventDetail>) => {
     const value = event.detail.value as string;
     setContent(value);
@@ -49,26 +65,52 @@ const Home: React.FC = () => {
     setTitle(value);
   };
 
-  const handleNewTodoChange = (event: CustomEvent<InputChangeEventDetail>) => {
+
+  const handleDateChange = (event: CustomEvent<InputChangeEventDetail>) => {
     const value = event.detail.value as string;
-    setNewsothutu(value);
+    setDate(value);
   };
 
+  function handleEditTodo(id: number) {
+    
+ 
+  
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          title: title,
+          content: content,
+          date: date,
+        };
+      } else {
+        return todo;
+      }
+    });
+    setTodos(updatedTodos);
+    
+    
+   handleCloseEditModal()
+  }
+
+  
+
   function handleAddTodo() {
-    if (newsothutu !== '') {
+    if (date !== '') {
       const todo = {
         id: todos.length + 1,
-        text: newsothutu,
+       
         title: title,
         content: content,
-        pinned: false
+        pinned: false,
+        date: date,
       };
       setTodos([...todos, todo]);
-      setNewsothutu('');
-      setTitle('');
-      setContent('');
+    
+    
     }
   }
+  
 
   function handleDeleteTodo(id: number) {
     const updatedTodos = todos.filter((todo) => todo.id !== id);
@@ -94,12 +136,40 @@ const Home: React.FC = () => {
 
   return (
   <IonPage>
-  <IonHeader>
-    <IonToolbar color="primary">
+  <IonHeader className="Hbar">
+    <IonToolbar className="bar">
       <IonTitle>Todo List</IonTitle>
     </IonToolbar>
   </IonHeader>
   <IonContent fullscreen>
+  <IonModal isOpen={isEditModalOpen} onDidDismiss={handleCloseEditModal}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Edit Todo</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <form className="todo-form" >
+      <IonList>
+        <IonItem >
+          <IonLabel position="floating">Title</IonLabel>
+          <IonInput type="text" placeholder="Enter title"  onIonChange={handleTitleChange} />
+        </IonItem>
+        <IonItem>
+          <IonLabel position="floating">Content</IonLabel>
+          <IonTextarea placeholder="Enter content"  onIonChange={handleContentChange} />
+        </IonItem>
+        <IonItem>
+          <IonLabel position="floating"> Date </IonLabel>
+          <IonInput type="date" placeholder="pick date"  onIonChange={handleDateChange} />        
+        </IonItem>
+        <IonButton expand="block" onClick={()=>handleEditTodo(Id)}>
+           Edit
+          </IonButton>
+      </IonList>
+    </form>
+        </IonContent>
+      </IonModal>
     <IonHeader collapse="condense">
       <IonToolbar>
         <IonTitle size="large">Todo List</IonTitle>
@@ -109,19 +179,19 @@ const Home: React.FC = () => {
       <IonList>
         <IonItem>
           <IonLabel position="floating">Title</IonLabel>
-          <IonInput type="text" placeholder="Enter title" value={title} onIonChange={handleTitleChange} />
+          <IonInput type="text" placeholder="Enter title"  onIonChange={handleTitleChange} />
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Content</IonLabel>
-          <IonTextarea placeholder="Enter content" value={content} onIonChange={handleContentChange} />
+          <IonTextarea placeholder="Enter content"  onIonChange={handleContentChange} />
         </IonItem>
         <IonItem>
-          <IonLabel position="floating">New Todo</IonLabel>
-          <IonInput type="text" placeholder="Enter todo" value={newsothutu} onIonChange={handleNewTodoChange} />
-          <IonButton expand="block" onClick={handleAddTodo}>
+          <IonLabel position="floating"> Date </IonLabel>
+          <IonInput type="date" placeholder="pick date"  onIonChange={handleDateChange} />        
+        </IonItem>
+        <IonButton expand="block" onClick={handleAddTodo}>
             Add Todo
           </IonButton>
-        </IonItem>
       </IonList>
     </form>
 
@@ -136,16 +206,21 @@ const Home: React.FC = () => {
           <IonCardContent>
             {pinnedTodos.map((todo) => (
               <IonItem key={todo.id}>
-                <IonCheckbox slot="start" checked={todo.pinned} onIonChange={() => handlePinTodo(todo.id)} />
+                <IonIcon icon={pin} slot="start" color="danger" />
+                <IonToggle slot="start" checked={todo.pinned} onIonChange={() => handlePinTodo(todo.id)} />
                 <IonLabel>
                   <h2>{todo.title}</h2>
                   <p>{todo.content}</p>
-                  <p>{todo.text}</p>
+                  <p>{todo.date}</p>
                 </IonLabel>
                 <IonButton fill="clear" onClick={() => handleDeleteTodo(todo.id)}>
-                  <IonIcon icon={pin} slot="start" color="danger" />
+                <IonIcon icon={trashBin} slot="start" color="danger" />
                   Delete
-                </IonButton>
+                </IonButton>  
+                <IonButton fill="clear" onClick={() =>  handleOpenEditModal(todo.id)}>
+                  <IonIcon icon={settings} slot="start" color="danger" />
+                  edit
+                </IonButton>               
               </IonItem>
             ))}
           </IonCardContent>
@@ -162,17 +237,22 @@ const Home: React.FC = () => {
         </IonCardHeader>
         <IonCardContent color="dark">
           {unpinnedTodos.map((todo) => (
-            <IonItem color="dark" key={todo.id}>
-              <IonCheckbox slot="start" checked={todo.pinned} onIonChange={() => handlePinTodo(todo.id)} />
+            <IonItem color="dark" key={todo.id} >
+              
+              <IonToggle  slot="start" checked={todo.pinned} onIonChange={() => handlePinTodo(todo.id)} />
               <IonLabel>
                 <h2>{todo.title}</h2>
                 <p>{todo.content}</p>
-                <p>{todo.text}</p>
+                <p>{todo.date}</p>
               </IonLabel>
               <IonButton fill="clear" onClick={() => handleDeleteTodo(todo.id)}>
-                <IonIcon icon={pin} slot="start" color="danger" />
+              <IonIcon icon={trashBin} slot="start" color="danger" />
                 Delete
               </IonButton>
+              <IonButton fill="clear" onClick={() => handleOpenEditModal(todo.id)}>
+                  <IonIcon icon={settings} slot="start" color="danger" />
+                  edit
+                </IonButton> 
             </IonItem>
           ))}
         </IonCardContent>
@@ -182,6 +262,7 @@ const Home: React.FC = () => {
 </IonGrid>
   </IonContent>
 </IonPage>
+
 
   );
 };
