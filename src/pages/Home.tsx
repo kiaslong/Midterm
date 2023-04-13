@@ -29,6 +29,7 @@ import { InputChangeEventDetail } from '@ionic/core';
 import {pin,trashBin,settings} from 'ionicons/icons';
 import './Home.css';
 import React from 'react';
+
 interface Todo {
   id: number;
 
@@ -47,30 +48,38 @@ const Home: React.FC = () => {
  
    const [date, setDate] = useState<string>('');
    const [Id, setSelectedID] = useState<number>(1);
-
-  function handleOpenEditModal(id:number) {
+// open modal
+  function handleOpenEditModal(id:number, title:string,content:string,date:string) {
     setSelectedID(id);
+      setTitle(title);
+      setContent(content);
+      setDate(date);
 
     setIsEditModalOpen(true);
   }
+
+// close modal
   function handleCloseEditModal() {
     setIsEditModalOpen(false);
   }
+  // handle input for content
   const handleContentChange = (event: CustomEvent<InputChangeEventDetail>) => {
     const value = event.detail.value as string;
     setContent(value);
   };
+  // handle input for title
   const handleTitleChange = (event: CustomEvent<InputChangeEventDetail>) => {
     const value = event.detail.value as string;
     setTitle(value);
   };
 
-
+// handle input for date
   const handleDateChange = (event: CustomEvent<InputChangeEventDetail>) => {
     const value = event.detail.value as string;
     setDate(value);
   };
 
+//hande edit event 
   function handleEditTodo(id: number) {
     
  
@@ -88,13 +97,16 @@ const Home: React.FC = () => {
       }
     });
     setTodos(updatedTodos);
+    setTitle('');
+      setContent('');
+      setDate('');
     
     
    handleCloseEditModal()
   }
 
   
-
+//handle add todos
   function handleAddTodo() {
     if (date !== '') {
       const todo = {
@@ -106,17 +118,20 @@ const Home: React.FC = () => {
         date: date,
       };
       setTodos([...todos, todo]);
-    
+      setTitle('');
+      setContent('');
+      setDate('');
     
     }
   }
   
-
+//handle delete todos 
   function handleDeleteTodo(id: number) {
     const updatedTodos = todos.filter((todo) => todo.id !== id);
     setTodos(updatedTodos);
   }
 
+  //handle Pin todos 
   function handlePinTodo(id: number) {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
@@ -153,15 +168,15 @@ const Home: React.FC = () => {
       <IonList>
         <IonItem >
           <IonLabel position="floating">Title</IonLabel>
-          <IonInput type="text" placeholder="Enter title"  onIonChange={handleTitleChange} />
+          <IonInput type="text" placeholder="Enter title" value={title}  onIonChange={handleTitleChange} />
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Content</IonLabel>
-          <IonTextarea placeholder="Enter content"  onIonChange={handleContentChange} />
+          <IonTextarea placeholder="Enter content" value={content} onIonChange={handleContentChange} />
         </IonItem>
         <IonItem>
           <IonLabel position="floating"> Date </IonLabel>
-          <IonInput type="date" placeholder="pick date"  onIonChange={handleDateChange} />        
+          <IonInput type="date" placeholder="pick date" value={date} onIonChange={handleDateChange} />        
         </IonItem>
         <IonButton expand="block" onClick={()=>handleEditTodo(Id)}>
            Edit
@@ -179,15 +194,15 @@ const Home: React.FC = () => {
       <IonList>
         <IonItem>
           <IonLabel position="floating">Title</IonLabel>
-          <IonInput type="text" placeholder="Enter title"  onIonChange={handleTitleChange} />
+          <IonInput type="text" placeholder="Enter title" value={title} onIonChange={handleTitleChange} />
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Content</IonLabel>
-          <IonTextarea placeholder="Enter content"  onIonChange={handleContentChange} />
+          <IonTextarea placeholder="Enter content" value={content} onIonChange={handleContentChange} />
         </IonItem>
         <IonItem>
           <IonLabel position="floating"> Date </IonLabel>
-          <IonInput type="date" placeholder="pick date"  onIonChange={handleDateChange} />        
+          <IonInput type="date" placeholder="pick date" value={date} onIonChange={handleDateChange} />        
         </IonItem>
         <IonButton expand="block" onClick={handleAddTodo}>
             Add Todo
@@ -217,7 +232,7 @@ const Home: React.FC = () => {
                 <IonIcon icon={trashBin} slot="start" color="danger" />
                   Delete
                 </IonButton>  
-                <IonButton fill="clear" onClick={() =>  handleOpenEditModal(todo.id)}>
+                <IonButton fill="clear" onClick={() =>  handleOpenEditModal(todo.id,todo.title,todo.content,todo.date)}>
                   <IonIcon icon={settings} slot="start" color="danger" />
                   edit
                 </IonButton>               
@@ -249,7 +264,7 @@ const Home: React.FC = () => {
               <IonIcon icon={trashBin} slot="start" color="danger" />
                 Delete
               </IonButton>
-              <IonButton fill="clear" onClick={() => handleOpenEditModal(todo.id)}>
+              <IonButton fill="clear" onClick={() => handleOpenEditModal(todo.id,todo.title,todo.content,todo.date)}>
                   <IonIcon icon={settings} slot="start" color="danger" />
                   edit
                 </IonButton> 
@@ -262,7 +277,6 @@ const Home: React.FC = () => {
 </IonGrid>
   </IonContent>
 </IonPage>
-
 
   );
 };
